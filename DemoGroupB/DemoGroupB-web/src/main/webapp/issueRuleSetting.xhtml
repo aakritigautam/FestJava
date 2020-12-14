@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+<ui:composition template="template/mainTemplate.xhtml">
+    <ui:define name="title">Issue Rule Setting</ui:define>
+    <ui:define name="content">
+        <h1 class="pagetitle">Issue Rules</h1>
+        <div class="account">
+            <div class="rtinner_left_block">
+                <p:growl id="growl" globalOnly="true" sticky="true" autoUpdate="true" life="3000"/>
+                <h:form>
+                    <h:commandButton value="New" action="#{issueRuleSettingBean.initCreate}"/>
+                </h:form>
+
+                <h:form id="manageNoticePanel">
+                    <rich:dataTable id="dataBookGroup"
+                                    value="#{issueRuleSettingDataModel.issueRuleSettingDtos}"
+                                    var="issueRuleSettingVar"
+                                    rowKeyVar="row">
+                        <f:facet name="noData">
+                            <h:outputText value="No records found" id="noRecords" style="color: red"/>
+                        </f:facet>
+                        <h:column><f:facet name="header">
+                            <h:outputLabel value="S.No."/>
+                        </f:facet>
+                            <h:outputText value="#{row+1}"/>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputLabel value="Member Type"/>
+                            </f:facet>
+                            <h:outputText value="#{issueRuleSettingVar.memberType}"/>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputLabel value="Semester"/>
+                            </f:facet>
+                            <h:outputText value="#{issueRuleSettingVar.semester}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputLabel value="No of Book Allowed"/>
+                            </f:facet>
+                            <h:outputText value="#{issueRuleSettingVar.noOfBookAllowed}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputLabel value="No of Renewal Days"/>
+                            </f:facet>
+                            <h:outputText value="#{issueRuleSettingVar.noOfRenewalDays}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputLabel value="No of Renews"/>
+                            </f:facet>
+                            <h:outputText value="#{issueRuleSettingVar.noOfRenews}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputLabel value="Fine per extra Day"/>
+                            </f:facet>
+                            <h:outputText value="#{issueRuleSettingVar.finePerExtraDay}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputLabel value="Book Category"/>
+                            </f:facet>
+                            <h:outputText value="#{issueRuleSettingVar.bookCategoryDto.name}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputLabel value="Created Date"/>
+                            </f:facet>
+                            <h:outputText value="#{issueRuleSettingVar.createdDate}"/>
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputLabel value="Modified Date"/>
+                            </f:facet>
+                            <h:outputText value="#{issueRuleSettingVar.lastUpdatedDate}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputLabel value="Created By"/>
+                            </f:facet>
+                            <h:outputText value="#{issueRuleSettingVar.createdByAdminDto.username}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputLabel value="Actions"/>
+                            </f:facet>
+                            <h:commandLink styleClass="action edit" title="Edit" value=""
+                                           action="#{issueRuleSettingBean.initEdit}">
+                                <f:setPropertyActionListener value="#{issueRuleSettingVar}"
+                                                             target="#{issueRuleSettingDataModel.issueRuleSettingDto}"/>
+                                <f:ajax execute="@this" onevent="function(data){showJqueryLoader(data)}"
+                                        render="@form"/>
+                            </h:commandLink>
+                            <h:commandLink styleClass="action delete" title="Delete" value=""
+                                           action="#{issueRuleSettingBean.delete}"
+                                           onclick="return confirm('Are you sure?')">
+                                <f:setPropertyActionListener value="#{issueRuleSettingVar}"
+                                                             target="#{issueRuleSettingDataModel.issueRuleSettingDto}"/>
+                                <f:ajax execute="@this" onevent="function(data){showJqueryLoader(data)}"
+                                        render="@form"/>
+                            </h:commandLink>
+                        </h:column>
+                    </rich:dataTable>
+                </h:form>
+            </div>
+        </div>
+
+        <h:form id="formEditPanel">
+            <rich:popupPanel show="#{issueRuleSettingDataModel.initEdit}" styleClass="customPop"
+                             id="popupEditParent" domElementAttachment="form" autosized="true"
+                             resizeable="false" moveable="true" onmaskclick="#{rich:component('popupEditParent')}.hide();">
+                <div class="account">
+                    <div class="rtinner_left_block">
+                        <fieldset class="container-fluid">
+                            <legend><h2>Create/Edit Rule </h2></legend>
+                            
+                            <p>
+                                <h:outputLabel value="Select Member Type :"><span class="compulsoryField">*</span> </h:outputLabel>
+                                <h:selectOneMenu value="#{issueRuleSettingDataModel.issueRuleSettingDto.memberType}" required="true" requiredMessage="Select Members">
+                                    <f:selectItem itemLabel="Select Member Type" itemValue="" noSelectionOption="true"/>
+                                    <f:selectItems value="#{issueRuleSettingDataModel.memberList}" var="member" itemValue="#{member}" itemLabel="#{member}"/>
+                                </h:selectOneMenu>
+                            </p>
+                            
+                            <p>
+                                <h:outputLabel value="Select Semester :"><span class="compulsoryField">*</span> </h:outputLabel>
+                                <h:selectOneMenu value="#{issueRuleSettingDataModel.issueRuleSettingDto.semester}" required="true" requiredMessage="Select semester">
+                                    <f:selectItem itemLabel="Select Semester" itemValue="" noSelectionOption="true"/>
+                                    <f:selectItems value="#{issueRuleSettingDataModel.semesterList}" var="semester" itemValue="#{semester}" itemLabel="#{semester}"/>
+                                </h:selectOneMenu>
+                            </p>
+
+                            <p>
+                                <h:outputLabel value="Select Book Category :"><span class="compulsoryField">*</span> </h:outputLabel>
+                                <h:selectOneMenu value="#{issueRuleSettingDataModel.issueRuleSettingDto.bookCategoryDto.id}" required="true" requiredMessage="Select BookGroup">
+                                    <f:selectItem itemLabel="Select BookGroup" itemValue="" noSelectionOption="true"/>
+                                    <f:selectItems value="#{issueRuleSettingDataModel.bookDtos}" var="bookCategoryDto" itemValue="#{bookCategoryDto.id}" itemLabel="#{bookCategoryDto.name}"/>
+                                </h:selectOneMenu>
+                            </p>
+                            <p>
+                                <h:outputLabel value="No Of Books Allowed : "><span class="compulsoryField">*</span> </h:outputLabel>
+                                <h:inputText id="inputNoOfBooks" required="true" requiredMessage="Enter no of books allowed"
+                                             validatorMessage="Enter Valid Number!"
+                                             value="#{issueRuleSettingDataModel.issueRuleSettingDto.noOfBookAllowed}"/>
+                                <h:message for="inputNoOfBooks" id="inputNoOfBooksError" styleClass="redcolortext"/>
+                            </p>
+                            <p>
+                                <h:outputLabel value="No Of Renews : "><span class="compulsoryField">*</span> </h:outputLabel>
+                                <h:inputText id="inputNoOfRenews" required="true" requiredMessage="Enter no Renews"
+                                             validatorMessage="Enter Valid Number!"
+                                             value="#{issueRuleSettingDataModel.issueRuleSettingDto.noOfRenews}"/>
+                                <h:message for="inputNoOfRenews" id="inputNoOfRenewsError" styleClass="redcolortext"/>
+                            </p>
+
+                            <p>
+                                <h:outputLabel value="No Of Day For Renew : "><span class="compulsoryField">*</span> </h:outputLabel>
+                                <h:inputText id="inputNoOfDayForRenew" required="true" requiredMessage="Enter no days for renew"
+                                             validatorMessage="Enter Valid Number!"
+                                             value="#{issueRuleSettingDataModel.issueRuleSettingDto.noOfRenewalDays}"/>
+                                <h:message for="inputNoOfDayForRenew" id="inputNoOfDayForRenewError" styleClass="redcolortext"/>
+                            </p>
+
+                            <p>
+                                <h:outputLabel value="Fine Per Extra Day : "/>
+                                <h:inputText id="inputFinePerDay" required="false" requiredMessage="Enter Name"
+                                             validatorMessage="Enter Valid Description!"
+                                             value="#{issueRuleSettingDataModel.issueRuleSettingDto.finePerExtraDay}"/>
+                                <h:message for="inputFinePerDay" id="inputFinePerDayError" styleClass="redcolortext"/>
+                            </p>
+                        </fieldset>
+                    </div>
+                    <div class="rtinner_right_block">
+                        <div class="Btn_block">
+                            <p>
+                                <h:commandButton id="btnEditParent" value="Save" action="#{issueRuleSettingBean.saveUpdate}">
+                                    <f:ajax execute="@form" onevent="function(data){handleDisableButton(data,'formEditPanel:btnEditParent')}" render="@form"  />
+                                </h:commandButton>
+
+                                <h:commandButton id="btnCancel" value="Cancel" action="#{issueRuleSettingBean.navigateToPage()}" immediate="true">
+                                    <f:ajax execute="@form" onevent="function(data){handleDisableButton(data,'formEditPanel:btnCancel')}" render="@form"/>
+                                </h:commandButton>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </rich:popupPanel>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>
